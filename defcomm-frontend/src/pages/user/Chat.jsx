@@ -4,6 +4,7 @@ import MessageBubble from "../../components/chat/MessageBubble";
 import MessageInput from "../../components/chat/MessageInput";
 import GroupList from "../../components/chat/GroupList";
 import DateSeparator from "../../components/chat/DateSeparator";
+import Loader from "../../components/common/Loader";
 import { useChat } from "../../context/useChat";
 import { useAuth } from "../../context/useAuth";
 
@@ -52,7 +53,7 @@ const Chat = () => {
     return (
       <Layout>
         <div className="flex items-center justify-center h-full">
-          <div className="text-[#014BAA] font-semibold">Loading...</div>
+          <Loader />
         </div>
       </Layout>
     );
