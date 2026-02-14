@@ -67,8 +67,8 @@ const ManageUsers = () => {
     if (loading && users.length === 0) {
         return (
             <Layout>
-                <div className="flex items-center justify-center h-screen">
-                    <div className="text-gray-400">Loading operative directory...</div>
+                <div className="flex items-center justify-center h-full">
+                    <div className="text-[#014BAA] font-semibold">Loading operative directory...</div>
                 </div>
             </Layout>
         );
@@ -78,30 +78,33 @@ const ManageUsers = () => {
         <Layout>
             <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-bold text-green-400">Operative Directory</h1>
-                    <div className="px-3 py-1 bg-green-900/30 text-green-500 rounded-full text-sm font-bold border border-green-800">
+                    <div>
+                        <h1 className="text-3xl font-bold text-black tracking-tight">Operative Directory</h1>
+                        <p className="text-gray-500 mt-1">Manage system access and roles</p>
+                    </div>
+                    <div className="px-4 py-2 bg-[#014BAA]/10 text-[#014BAA] rounded-full text-sm font-bold border border-[#014BAA]/20">
                         {users.length} Active Profiles
                     </div>
                 </div>
 
                 {error && (
-                    <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded">
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md shadow-sm">
                         {error}
                     </div>
                 )}
 
                 {success && (
-                    <div className="bg-green-900 border border-green-700 text-green-200 px-4 py-3 rounded">
+                    <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md shadow-sm">
                         {success}
                     </div>
                 )}
 
                 {/* Edit Modal / Area */}
                 {editingUser && (
-                    <div className="bg-gray-950 p-6 rounded-lg border border-green-600 shadow-2xl">
+                    <div className="bg-white p-6 rounded-lg border border-[#014BAA] shadow-lg sticky top-6 z-20">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold text-gray-100">Edit Permissions: {editingUser.username}</h2>
-                            <span className="text-xs text-gray-500 font-mono italic">Identity Locked</span>
+                            <h2 className="text-xl font-bold text-black">Edit Permissions: {editingUser.username}</h2>
+                            <span className="text-xs text-gray-400 font-mono italic">Identity Locked</span>
                         </div>
                         <form onSubmit={handleUpdate} className="flex gap-4 items-center">
                             <div className="flex-1">
@@ -109,50 +112,50 @@ const ManageUsers = () => {
                                 <select
                                     value={newRole}
                                     onChange={(e) => setNewRole(e.target.value)}
-                                    className="w-full bg-gray-900 border border-gray-700 rounded px-4 py-2 text-white outline-none focus:border-green-500"
+                                    className="w-full bg-white border border-gray-300 rounded px-4 py-2 text-black outline-none focus:ring-2 focus:ring-[#014BAA] focus:border-transparent"
                                 >
                                     <option value="user">Field Operative</option>
                                     <option value="hq">Command HQ</option>
                                 </select>
                             </div>
                             <div className="flex gap-2 pt-5">
-                                <button type="submit" className="px-6 py-2 bg-green-600 text-white font-bold rounded hover:bg-green-500 transition-colors">Grant Access</button>
-                                <button type="button" onClick={() => setEditingUser(null)} className="px-6 py-2 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-colors">Cancel</button>
+                                <button type="submit" className="px-6 py-2 bg-[#014BAA] text-white font-bold rounded hover:bg-[#013B8A] transition-colors shadow-sm">Grant Access</button>
+                                <button type="button" onClick={() => setEditingUser(null)} className="px-6 py-2 bg-white text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-colors">Cancel</button>
                             </div>
                         </form>
                     </div>
                 )}
 
-                <div className="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-800/50 border-b border-gray-800">
-                                <th className="p-4 text-xs font-bold text-gray-500 uppercase">Username</th>
-                                <th className="p-4 text-xs font-bold text-gray-500 uppercase">Role</th>
-                                <th className="p-4 text-xs font-bold text-gray-500 uppercase">Status</th>
-                                <th className="p-4 text-xs font-bold text-gray-500 uppercase text-right">Actions</th>
+                            <tr className="bg-gray-50 border-b border-gray-200">
+                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Username</th>
+                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Role</th>
+                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-800">
+                        <tbody className="divide-y divide-gray-100">
                             {users.map((user) => (
-                                <tr key={user._id} className="hover:bg-gray-800/20 transition-colors">
-                                    <td className="p-4 font-semibold text-gray-200">{user.username}</td>
+                                <tr key={user._id} className="hover:bg-[#F8F3F0] transition-colors">
+                                    <td className="p-4 font-semibold text-gray-900">{user.username}</td>
                                     <td className="p-4">
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${user.role === 'hq' ? 'bg-purple-900 text-purple-200' : 'bg-blue-900 text-blue-200'}`}>
+                                        <span className={`px-2 py-1 rounded-sm text-[10px] font-bold uppercase border ${user.role === 'hq' ? 'bg-purple-50 text-purple-700 border-purple-200' : 'bg-blue-50 text-blue-700 border-blue-200'}`}>
                                             {user.role}
                                         </span>
                                     </td>
                                     <td className="p-4">
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${user.status === 'approved' ? 'bg-green-900/40 text-green-400' :
-                                            user.status === 'rejected' ? 'bg-red-900/40 text-red-400' :
-                                                'bg-yellow-900/40 text-yellow-500'
+                                        <span className={`px-2 py-1 rounded-sm text-[10px] font-bold uppercase border ${user.status === 'approved' ? 'bg-green-50 text-green-700 border-green-200' :
+                                            user.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-200' :
+                                                'bg-yellow-50 text-yellow-700 border-yellow-200'
                                             }`}>
                                             {user.status}
                                         </span>
                                     </td>
-                                    <td className="p-4 text-right space-x-2">
-                                        <button onClick={() => handleStartEdit(user)} className="text-gray-400 hover:text-green-400 font-bold text-xs uppercase">Edit</button>
-                                        <button onClick={() => handleDelete(user._id)} className="text-gray-600 hover:text-red-500 font-bold text-xs uppercase">Delete</button>
+                                    <td className="p-4 text-right space-x-3">
+                                        <button onClick={() => handleStartEdit(user)} className="text-[#014BAA] hover:text-[#013B8A] font-bold text-xs uppercase hover:underline">Edit</button>
+                                        <button onClick={() => handleDelete(user._id)} className="text-gray-400 hover:text-red-600 font-bold text-xs uppercase hover:underline">Delete</button>
                                     </td>
                                 </tr>
                             ))}

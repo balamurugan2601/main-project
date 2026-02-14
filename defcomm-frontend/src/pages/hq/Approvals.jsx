@@ -60,8 +60,8 @@ const Approvals = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-gray-400">Loading pending users...</div>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-[#014BAA] font-semibold">Loading pending users...</div>
         </div>
       </Layout>
     );
@@ -69,54 +69,57 @@ const Approvals = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-green-400">User Approvals</h1>
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold text-black tracking-tight">User Approvals</h1>
+          <p className="text-gray-500 mt-1">Review and manage access requests</p>
+        </div>
 
         {error && (
-          <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md shadow-sm">
             {error}
           </div>
         )}
 
-        <div className="bg-gray-900 p-6 rounded-lg">
-          <h2 className="text-xl font-bold text-gray-300 mb-4">
+        <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+          <h2 className="text-xl font-bold text-black mb-6">
             Pending Approvals ({pendingUsers.length})
           </h2>
 
           {pendingUsers.length === 0 ? (
-            <div className="text-gray-400 text-center py-8">
+            <div className="text-gray-400 text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-200">
               No pending user approvals
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {pendingUsers.map((user) => (
                 <div
                   key={user._id}
-                  className="bg-gray-800 p-4 rounded-lg flex justify-between items-center"
+                  className="bg-white border border-gray-200 p-6 rounded-lg flex flex-col md:flex-row justify-between items-center gap-4 hover:shadow-md transition-shadow"
                 >
                   <div>
-                    <div className="text-gray-200 font-semibold">
+                    <div className="text-black font-bold text-lg">
                       {user.username}
                     </div>
-                    <div className="text-gray-400 text-sm">
-                      Role: {user.role}
+                    <div className="text-gray-600 text-sm">
+                      Role: <span className="font-semibold text-[#014BAA]">{user.role}</span>
                     </div>
                     <div className="text-gray-500 text-xs mt-1">
                       Registered: {user.createdAt ? new Date(user.createdAt).toLocaleString() : '--/--/----, --:--:--'}
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <button
                       onClick={() => handleReject(user._id)}
                       disabled={processingId === user._id}
-                      className="px-4 py-2 bg-red-900 hover:bg-red-800 text-red-200 font-bold rounded-lg transition-colors disabled:opacity-50"
+                      className="px-5 py-2 bg-white border border-red-200 text-red-600 font-bold rounded-md hover:bg-red-50 transition-colors disabled:opacity-50"
                     >
                       {processingId === user._id ? '...' : 'Reject'}
                     </button>
                     <button
                       onClick={() => handleApprove(user._id)}
                       disabled={processingId === user._id}
-                      className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors disabled:opacity-50"
+                      className="px-6 py-2 bg-[#014BAA] hover:bg-[#013B8A] text-white font-bold rounded-md transition-colors disabled:opacity-50 shadow-sm"
                     >
                       {processingId === user._id ? 'Processing...' : 'Approve'}
                     </button>

@@ -53,21 +53,24 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-      <div className="bg-gray-900 rounded-lg shadow-xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-green-400 mb-8 text-center">
-          DefComm Login
-        </h1>
+    <div className="min-h-screen bg-[#F8F3F0] flex items-center justify-center px-4 font-sans">
+      <div className="bg-white rounded-lg shadow-xl p-10 w-full max-w-md border border-gray-200">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold text-[#014BAA] tracking-tight mb-2">
+            DefComm
+          </h1>
+          <p className="text-gray-500 text-sm font-medium">SECURE COMMUNICATION PORTAL</p>
+        </div>
 
         {error && (
-          <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6 text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="username" className="block text-sm font-bold text-gray-700 mb-2">
               Username
             </label>
             <input
@@ -77,13 +80,13 @@ const Login = () => {
               onChange={(e) => setUsername(e.target.value)}
               required
               disabled={loading}
-              className="w-full px-4 py-2 bg-gray-950 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:border-green-400 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-[#014BAA] focus:border-transparent transition-all disabled:opacity-50"
               placeholder="Enter your username"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="password" className="block text-sm font-bold text-gray-700 mb-2">
               Password
             </label>
             <input
@@ -93,7 +96,7 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={loading}
-              className="w-full px-4 py-2 bg-gray-950 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:border-green-400 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-[#014BAA] focus:border-transparent transition-all disabled:opacity-50"
               placeholder="Enter your password"
             />
           </div>
@@ -101,15 +104,15 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-600 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#014BAA] hover:bg-[#013B8A] text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md mt-4"
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Authenticating...' : 'Login'}
           </button>
         </form>
 
-        <p className="text-sm text-center text-gray-400 mt-6">
+        <p className="text-sm text-center text-gray-500 mt-8">
           Don&apos;t have an account?{' '}
-          <Link to="/register" className="text-green-400 hover:underline">
+          <Link to="/register" className="text-[#014BAA] font-bold hover:underline">
             Register
           </Link>
         </p>

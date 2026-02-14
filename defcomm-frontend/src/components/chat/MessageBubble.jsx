@@ -13,12 +13,16 @@ const MessageBubble = ({ message, currentUserId, senderName }) => {
   return (
     <div className={`flex mb-4 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
       <div
-        className={`rounded-lg p-3 max-w-xs ${isCurrentUser ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-200'
+        className={`rounded-2xl px-5 py-3 max-w-sm sm:max-w-md shadow-sm border ${isCurrentUser
+          ? 'bg-[#014BAA] text-white border-transparent'
+          : 'bg-white text-black border-gray-200'
           }`}
       >
-        <div className="text-xs text-gray-400 mb-1">{senderName}</div>
-        <div className="break-words">{decryptedText}</div>
-        <div className="text-xs text-gray-500 mt-1 text-right">{timestamp}</div>
+        {!isCurrentUser && (
+          <div className="text-xs text-[#014BAA] font-bold mb-1">{senderName}</div>
+        )}
+        <div className="break-words leading-relaxed text-sm">{decryptedText}</div>
+        <div className={`text-[10px] mt-1 text-right ${isCurrentUser ? 'text-white/70' : 'text-gray-400'}`}>{timestamp}</div>
       </div>
     </div>
   );

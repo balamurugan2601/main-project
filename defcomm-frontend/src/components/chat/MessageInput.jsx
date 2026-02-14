@@ -15,19 +15,19 @@ const MessageInput = ({ onSend, disabled = false }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-3 p-4 bg-gray-900 border-t border-gray-700">
+    <form onSubmit={handleSubmit} className="flex gap-3 p-4 bg-white border-t border-gray-200 rounded-b-lg">
       <input
         type="text"
         value={text}
         onChange={(e) => setText(e.target.value)}
         disabled={disabled}
         placeholder={disabled ? "Select a group to start messaging" : "Type a message..."}
-        className="flex-1 px-4 py-2 bg-gray-950 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:border-green-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-[#014BAA] focus:border-transparent disabled:opacity-50 disabled:bg-gray-100 placeholder-gray-400"
       />
       <button
         type="submit"
         disabled={disabled || !text.trim()}
-        className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-6 py-2 bg-[#014BAA] hover:bg-[#013B8A] text-white font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
       >
         Send
       </button>

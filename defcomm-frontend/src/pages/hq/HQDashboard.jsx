@@ -15,6 +15,7 @@ const HQDashboard = () => {
   const [recentMessages, setRecentMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadDashboardData();
@@ -46,8 +47,8 @@ const HQDashboard = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-gray-400">Loading dashboard...</div>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-[#014BAA] font-semibold">Loading dashboard...</div>
         </div>
       </Layout>
     );
@@ -55,61 +56,64 @@ const HQDashboard = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-green-400">HQ Dashboard</h1>
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold text-black tracking-tight">HQ Dashboard</h1>
+          <p className="text-gray-500 mt-1">System Overview & Status</p>
+        </div>
 
         {error && (
-          <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md shadow-sm">
             {error}
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="bg-gray-900 p-6 rounded-lg">
-            <div className="text-3xl font-bold text-green-400">{stats?.totalUsers || 0}</div>
-            <div className="text-gray-300 mt-2">Total Users</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="text-4xl font-bold text-[#014BAA]">{stats?.totalUsers || 0}</div>
+            <div className="text-gray-600 mt-2 font-medium">Total Users</div>
           </div>
 
-          <div className="bg-gray-900 p-6 rounded-lg">
-            <div className="text-3xl font-bold text-green-400">{stats?.approvedUsers || 0}</div>
-            <div className="text-gray-300 mt-2">Approved Users</div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="text-4xl font-bold text-[#014BAA]">{stats?.approvedUsers || 0}</div>
+            <div className="text-gray-600 mt-2 font-medium">Approved Users</div>
           </div>
 
-          <div className="bg-gray-900 p-6 rounded-lg">
-            <div className="text-3xl font-bold text-green-400">{stats?.pendingUsers || 0}</div>
-            <div className="text-gray-300 mt-2">Pending Users</div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="text-4xl font-bold text-[#014BAA]">{stats?.pendingUsers || 0}</div>
+            <div className="text-gray-600 mt-2 font-medium">Pending Users</div>
           </div>
 
-          <div className="bg-gray-900 p-6 rounded-lg cursor-pointer hover:bg-gray-800 transition-colors border border-transparent hover:border-green-500" onClick={() => navigate('/hq/groups')}>
-            <div className="text-3xl font-bold text-green-400">{stats?.totalGroups || 0}</div>
-            <div className="text-gray-300 mt-2 font-semibold">Total Groups</div>
-            <div className="text-xs text-green-500 mt-1">Click to Manage →</div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:border-[#014BAA] transition-colors group" onClick={() => navigate('/hq/groups')}>
+            <div className="text-4xl font-bold text-[#014BAA] group-hover:scale-105 transition-transform">{stats?.totalGroups || 0}</div>
+            <div className="text-gray-600 mt-2 font-medium">Total Groups</div>
+            <div className="text-xs text-[#014BAA] mt-2 font-semibold uppercase tracking-wide opacity-0 group-hover:opacity-100 transition-opacity">Manage →</div>
           </div>
 
-          <div className="bg-gray-900 p-6 rounded-lg">
-            <div className="text-3xl font-bold text-green-400">{stats?.totalMessages || 0}</div>
-            <div className="text-gray-300 mt-2">Total Messages</div>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="text-4xl font-bold text-[#014BAA]">{stats?.totalMessages || 0}</div>
+            <div className="text-gray-600 mt-2 font-medium">Total Messages</div>
           </div>
         </div>
 
-        <div className="bg-gray-900 p-6 rounded-lg">
-          <h2 className="text-2xl font-bold text-green-400 mb-4">Recent Activity</h2>
-          <div className="space-y-3">
+        <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+          <h2 className="text-xl font-bold text-black mb-6 border-b pb-4">Recent Activity</h2>
+          <div className="space-y-0 divide-y divide-gray-100">
             {recentMessages?.length === 0 ? (
-              <div className="text-gray-400 text-center py-4">No recent messages</div>
+              <div className="text-gray-400 text-center py-8">No recent messages</div>
             ) : (
               recentMessages?.map((msg, index) => (
-                <div key={index} className="bg-gray-800 p-4 rounded-lg">
+                <div key={index} className="py-4 first:pt-0 last:pb-0 hover:bg-gray-50 transition-colors px-2 -mx-2 rounded-md">
                   <div className="flex justify-between items-start">
                     <div>
-                      <div className="text-gray-300 font-semibold">
+                      <div className="text-gray-900 font-semibold text-sm">
                         {msg.senderName}
                       </div>
-                      <div className="text-gray-400 text-sm">
-                        Group: {msg.groupName}
+                      <div className="text-gray-500 text-xs mt-1">
+                        Group: <span className="text-[#014BAA] font-medium">{msg.groupName}</span>
                       </div>
                     </div>
-                    <div className="text-gray-500 text-sm">
+                    <div className="text-gray-400 text-xs font-mono">
                       {formatTimestamp(msg.timestamp)}
                     </div>
                   </div>
