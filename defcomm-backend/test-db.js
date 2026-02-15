@@ -2,20 +2,32 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 console.log('Environment Debug:');
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set (using connection string)' : 'Not set');
 console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PASSWORD length:', process.env.DB_PASSWORD ? process.env.DB_PASSWORD.length : 'NULL');
 console.log('DB_HOST:', process.env.DB_HOST);
 
-const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    {
-        host: process.env.DB_HOST || 'localhost',
+// Use same configuration as config/db.js
+const sequelize = process.env.DATABASE_URL
+    ? new Sequelize(process.env.DATABASE_URL, {
         dialect: 'mysql',
-        logging: false
-    }
-);
+        logging: false,
+        dialectOptions: {
+            ssl: process.env.NODE_ENV === 'production'
+                ? { require: true, rejectUnauthorized: false }
+                : false
+        }
+    })
+    : new Sequelize(
+        process.env.DB_NAME || 'defcomm',
+        process.env.DB_USER || 'root',
+        process.env.DB_PASSWORD || 'tiger123',
+        {
+            host: process.env.DB_HOST || 'localhost',
+            port: process.env.DB_PORT || 3306,
+            dialect: 'mysql',
+            logging: false
+        }
+    );
 
 (async () => {
     try {
