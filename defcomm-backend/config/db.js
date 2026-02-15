@@ -5,6 +5,11 @@ const sequelize = process.env.DATABASE_URL
     ? new Sequelize(process.env.DATABASE_URL, {
         dialect: 'mysql',
         logging: process.env.NODE_ENV === 'development' ? console.log : false,
+        dialectOptions: {
+            ssl: process.env.NODE_ENV === 'production'
+                ? { require: true, rejectUnauthorized: false }
+                : false
+        },
         pool: {
             max: 5,
             min: 0,
@@ -29,6 +34,7 @@ const sequelize = process.env.DATABASE_URL
             },
         }
     );
+
 
 const connectDB = async () => {
     try {
