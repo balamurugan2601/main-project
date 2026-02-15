@@ -60,7 +60,7 @@ app.use('/api', limiter);
 // Stricter rate limit for auth endpoints
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: isDev ? 0 : 20,
+    max: isDev ? 0 : 200,
     skip: () => isDev, // Completely skip in dev
     message: { message: 'Too many authentication attempts, please try again later.' },
     standardHeaders: true,
