@@ -60,8 +60,7 @@ const AlertsMonitor = () => {
             setAnalyzingIds(pendingIds);
 
             for (const msg of toAnalyze) {
-                // Wait 5 seconds BEFORE calling the API to respect Gemini free tier (15 RPM)
-                await new Promise(r => setTimeout(r, 5000));
+                // Rate limiting is handled by the serial queue inside ai.js
                 const isThreat = await analyzeThreat(msg.decrypted);
 
                 // Update this single message in state

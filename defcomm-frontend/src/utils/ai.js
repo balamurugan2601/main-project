@@ -2,6 +2,7 @@
  * AI Utility for DefComm
  * Uses Gemini API to analyze message sentiment and intent.
  * Includes exponential backoff retry to handle 429 rate limits.
+ * A serial request queue ensures we never exceed the free tier (15 RPM).
  */
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -24,6 +25,19 @@ const saveCache = () => {
     } catch (e) {
         // Ignore (e.g. localStorage full)
     }
+};
+
+// Serial queue — ensures only ONE Gemini request runs at a time
+// with a 4-second gap between calls (safe for 15 RPM free tier).
+let requestQueue = Promise.resolve();
+const MIN_REQUEST_GAP_MS = 4000;
+
+const enqueueRequest = (fn) => {
+    requestQueue = requestQueue.then(() => fn()).then(
+        (result) => new Promise((resolve) => setTimeout(() => resolve(result), MIN_REQUEST_GAP_MS)),
+        (err) => new Promise((_, reject) => setTimeout(() => reject(err), MIN_REQUEST_GAP_MS))
+    );
+    return requestQueue;
 };
 
 const PROMPT = `You are a military intelligence officer. Analyze the following message for ACTIVE, IMMINENT operational security threats (e.g., orchestrating an attack, active security breaches, leaking classified coordinates).
@@ -54,22 +68,19 @@ const fetchWithRetry = async (text, maxRetries = 3) => {
     const fullPrompt = PROMPT.replace("{TEXT}", text);
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
-        // Wait BEFORE the call (not after) to space out requests
         if (attempt > 0) {
             const backoffMs = Math.min(5000 * Math.pow(2, attempt - 1), 30000);
             console.info(`Gemini 429 — retrying in ${backoffMs / 1000}s (attempt ${attempt + 1}/${maxRetries + 1})...`);
             await new Promise(r => setTimeout(r, backoffMs));
         }
 
+        // NOTE: responseMimeType is not supported on the free tier — omit it to avoid 400 errors.
         const payload = {
             contents: [{ parts: [{ text: fullPrompt }] }],
             generationConfig: {
-                temperature: 0.1, // Low temperature for consistent formatting
-                responseMimeType: "text/plain", // Request plain text for simple "THREAT" or "SAFE"
+                temperature: 0.1,
             }
         };
-
-        console.debug("GEMINI DUMP - Sending payload:", JSON.stringify(payload, null, 2));
 
         const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
             method: "POST",
@@ -101,24 +112,31 @@ export const analyzeThreat = async (text) => {
         return threatCache[text];
     }
 
-    try {
-        const response = await fetchWithRetry(text);
-
-        if (!response || !response.ok) {
-            console.warn("Gemini API failed after retries. Falling back to keyword logic.");
-            return true; // Fallback
+    // Enqueue the actual API call — ensures serial execution with 4s gaps
+    return enqueueRequest(async () => {
+        // Re-check cache in case another queued call already resolved this text
+        if (text in threatCache) {
+            return threatCache[text];
         }
 
-        const data = await response.json();
-        const result = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toUpperCase();
+        try {
+            const response = await fetchWithRetry(text);
 
-        const isThreat = result === "THREAT";
-        threatCache[text] = isThreat;
-        saveCache();
+            if (!response || !response.ok) {
+                console.warn("Gemini API failed after retries. Falling back to keyword logic.");
+                return true; // Fallback
+            }
 
-        return isThreat;
-    } catch (error) {
-        console.error("Gemini AI Analysis failed:", error);
-        return true; // Fallback to keyword logic on error
-    }
-};
+            const data = await response.json();
+            const result = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toUpperCase();
+
+            const isThreat = result === "THREAT";
+            threatCache[text] = isThreat;
+            saveCache();
+
+            return isThreat;
+        } catch (error) {
+            console.error("Gemini AI Analysis failed:", error);
+            return true; // Fallback to keyword logic on error
+        }
+    });
