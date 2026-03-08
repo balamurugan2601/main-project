@@ -6,9 +6,24 @@
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
-const threatCache = new Map();
+const CACHE_KEY = "defcomm_ai_threat_cache";
 
-/**
+// Initialize cache from localStorage
+let threatCache = {};
+try {
+    const saved = localStorage.getItem(CACHE_KEY);
+    if (saved) threatCache = JSON.parse(saved);
+} catch (e) {
+    console.error("Failed to load AI cache", e);
+}
+
+const saveCache = () => {
+    try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(threatCache));
+    } catch (e) {
+        // Ignore (e.g. localStorage full)
+    }
+};/**
  * Validates whether a message is an operational threat or routine chatter.
  * @param {string} text - The decrypted message content
  * @returns {Promise<boolean>} - True if it's a legitimate threat, false if safe.
@@ -19,8 +34,8 @@ export const analyzeThreat = async (text) => {
         return true; // Fallback to keyword logic
     }
 
-    if (threatCache.has(text)) {
-        return threatCache.get(text);
+    if (text in threatCache) {
+        return threatCache[text];
     }
 
     try {
@@ -53,7 +68,8 @@ Is this an ACTUAL operational threat or is it SAFE? Respond with ONLY the word "
         const result = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toUpperCase();
 
         const isThreat = result === "THREAT";
-        threatCache.set(text, isThreat);
+        threatCache[text] = isThreat;
+        saveCache();
 
         return isThreat;
     } catch (error) {
