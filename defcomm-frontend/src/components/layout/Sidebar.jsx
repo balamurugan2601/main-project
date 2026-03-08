@@ -98,7 +98,7 @@ const Sidebar = () => {
             </div>
           </div>
           <div className="pt-2 border-t border-white/10 mt-2">
-            <div className="text-[10px] text-white/60 uppercase font-bold tracking-tighter">
+            <div className="text-[10px] text-white uppercase font-bold tracking-tighter">
               Account Status: Verified
             </div>
           </div>

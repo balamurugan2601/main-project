@@ -87,11 +87,12 @@ const Register = () => {
               disabled={loading}
               minLength={6}
             />
-            <p className="text-xs text-gray-400 mt-1">Minimum 6 characters</p>
+            <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-bold text-gray-700">Role</label>
+            <label htmlFor="role-select" className="block mb-1 text-sm font-bold text-gray-700">Role</label>
             <select
+              id="role-select"
               value={role}
               onChange={(e) => setRole(e.target.value)}
               className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#014BAA] focus:border-transparent transition-all text-black"

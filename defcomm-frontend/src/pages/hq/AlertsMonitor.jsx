@@ -164,7 +164,7 @@ const AlertsMonitor = () => {
                     </div>
                 ) : messages.length === 0 ? (
                     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-12 text-center">
-                        <div className="text-gray-400 text-lg font-medium">
+                        <div className="text-gray-600 text-lg font-medium">
                             No messages found for this filter.
                         </div>
                         <p className="text-gray-300 text-sm mt-2">
@@ -183,12 +183,12 @@ const AlertsMonitor = () => {
                                 <div
                                     key={msg.id}
                                     className={`bg-white rounded-lg border shadow-sm p-5 transition-all hover:shadow-md ${isAnalyzing
-                                            ? "border-gray-200 opacity-70"
-                                            : isActive
-                                                ? "border-red-300 border-l-4 border-l-red-500"
-                                                : isResolved
-                                                    ? "border-green-200 border-l-4 border-l-green-500"
-                                                    : "border-gray-200"
+                                        ? "border-gray-200 opacity-70"
+                                        : isActive
+                                            ? "border-red-300 border-l-4 border-l-red-500"
+                                            : isResolved
+                                                ? "border-green-200 border-l-4 border-l-green-500"
+                                                : "border-gray-200"
                                         }`}
                                 >
                                     <div className="flex justify-between items-start gap-4">
@@ -210,7 +210,7 @@ const AlertsMonitor = () => {
                                                     <span className="font-bold text-sm text-gray-900">
                                                         {msg.senderName}
                                                     </span>
-                                                    <span className="text-gray-400 mx-2">•</span>
+                                                    <span className="text-gray-500 mx-2">•</span>
                                                     <span className="text-sm text-[#014BAA] font-medium">
                                                         {msg.groupName}
                                                     </span>
@@ -226,17 +226,17 @@ const AlertsMonitor = () => {
 
                                             {/* Metadata Row */}
                                             <div className="flex items-center gap-3 flex-wrap">
-                                                <span className="text-xs text-gray-400 font-mono">
+                                                <span className="text-xs text-gray-600 font-mono">
                                                     {formatTimestamp(msg.timestamp)}
                                                 </span>
-                                                <span className="text-xs text-gray-300">|</span>
-                                                <span className="text-xs text-gray-400">
+                                                <span className="text-xs text-gray-400">|</span>
+                                                <span className="text-xs text-gray-600">
                                                     Message #{msg.id}
                                                 </span>
 
                                                 {isAnalyzing && (
-                                                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50 px-2 py-0.5 rounded-full">
-                                                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-pulse"></span>
+                                                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-gray-50 px-2 py-0.5 rounded-full">
+                                                        <span className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-pulse"></span>
                                                         Analyzing...
                                                     </span>
                                                 )}

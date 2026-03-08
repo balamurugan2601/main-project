@@ -104,12 +104,13 @@ const ManageUsers = () => {
                     <div className="bg-white p-6 rounded-lg border border-[#014BAA] shadow-lg sticky top-6 z-20">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-bold text-black">Edit Permissions: {editingUser.username}</h2>
-                            <span className="text-xs text-gray-400 font-mono italic">Identity Locked</span>
+                            <span className="text-xs text-gray-500 font-mono italic">Identity Locked</span>
                         </div>
                         <form onSubmit={handleUpdate} className="flex gap-4 items-center">
                             <div className="flex-1">
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Authorization Level</label>
+                                <label htmlFor="role-select" className="block text-xs font-bold text-gray-500 uppercase mb-1">Authorization Level</label>
                                 <select
+                                    id="role-select"
                                     value={newRole}
                                     onChange={(e) => setNewRole(e.target.value)}
                                     className="w-full bg-white border border-gray-300 rounded px-4 py-2 text-black outline-none focus:ring-2 focus:ring-[#014BAA] focus:border-transparent"
@@ -155,7 +156,7 @@ const ManageUsers = () => {
                                     </td>
                                     <td className="p-4 text-right space-x-3">
                                         <button onClick={() => handleStartEdit(user)} className="text-[#014BAA] hover:text-[#013B8A] font-bold text-xs uppercase hover:underline">Edit</button>
-                                        <button onClick={() => handleDelete(user._id)} className="text-gray-400 hover:text-red-600 font-bold text-xs uppercase hover:underline">Delete</button>
+                                        <button onClick={() => handleDelete(user._id)} className="text-gray-500 hover:text-red-600 font-bold text-xs uppercase hover:underline">Delete</button>
                                     </td>
                                 </tr>
                             ))}
