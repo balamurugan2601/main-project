@@ -52,8 +52,9 @@ const AlertsMonitor = () => {
                 let isThreat = false;
                 if (threatKeywords.test(msg.decrypted)) {
                     isThreat = await analyzeThreat(msg.decrypted);
-                    // Add a small 1-second delay to avoid spamming the Gemini API and hitting 429s
-                    await new Promise(r => setTimeout(r, 1000));
+                    // Add a 4.2-second delay to strictly respect Gemini free tier limits (15 Requests Per Minute)
+                    console.info("Waiting 4.2s to comply with Gemini API rate limits...");
+                    await new Promise(r => setTimeout(r, 4200));
                 }
 
                 // Update this single message in state
