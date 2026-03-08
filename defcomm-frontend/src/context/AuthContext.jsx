@@ -11,11 +11,18 @@ export const AuthProvider = ({ children }) => {
   // Check authentication status on mount
   useEffect(() => {
     const verifyAuth = async () => {
+      const token = sessionStorage.getItem('jwt_token');
+      if (!token) {
+        // No token in this tab — go straight to login
+        setLoading(false);
+        return;
+      }
       try {
         const userData = await checkAuthAPI();
         setUser(userData);
       } catch (error) {
-        // Not authenticated or session expired
+        // Token invalid or expired
+        sessionStorage.removeItem('jwt_token');
         setUser(null);
       } finally {
         setLoading(false);
@@ -35,6 +42,7 @@ export const AuthProvider = ({ children }) => {
 
         // Enforce immediate revocation ONLY if rejected
         if (userData.status === 'rejected') {
+          sessionStorage.removeItem('jwt_token');
           setUser(null);
           return;
         }
@@ -45,9 +53,9 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         // ONLY log out if the error is 401 (Unauthorized)
-        // This prevents spontaneous logouts during 500 errors, network timeouts, or backend restarts.
         if (error.response?.status === 401) {
           console.warn('Session invalidated by server. Logging out.');
+          sessionStorage.removeItem('jwt_token');
           setUser(null);
         } else {
           console.log('Heartbeat failed (Transient Error). Retrying on next cycle...');
@@ -64,6 +72,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
+    sessionStorage.removeItem('jwt_token');
     try {
       await logoutAPI();
     } catch (error) {

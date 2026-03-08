@@ -17,6 +17,8 @@ const AlertsMonitor = () => {
     const [error, setError] = useState(null);
     const [resolvingId, setResolvingId] = useState(null);
 
+    const [analyzingIds, setAnalyzingIds] = useState(new Set());
+
     useEffect(() => {
         loadMessages();
     }, [filter]);
@@ -26,36 +28,47 @@ const AlertsMonitor = () => {
             setLoading(true);
             const data = await getFlaggedMessages(filter);
 
-            const analyzed = await Promise.all(
-                data.map(async (msg) => {
-                    const decrypted = decryptMessage(msg.encryptedText);
+            // Step 1: Decrypt synchronously and show messages immediately
+            const decrypted = data.map((msg) => ({
+                ...msg,
+                decrypted: decryptMessage(msg.encryptedText),
+                isThreat: msg.securityStatus === "resolved", // treat resolved as already confirmed
+                analyzing: msg.securityStatus !== "resolved",
+            }));
 
-                    let isThreat = false;
-                    if (msg.securityStatus !== "resolved") {
-                        const hasTriggerWord =
-                            /attack|perimeter|breach|security|urgent|critical|hostile|engage|destroy|intercept/i.test(
-                                decrypted
-                            );
-                        if (hasTriggerWord) {
-                            isThreat = await analyzeThreat(decrypted);
-                        }
-                    }
-
-                    return { ...msg, decrypted, isThreat };
-                })
-            );
-            // Only keep messages that are actual threats or previously resolved threats
-            const threatsOnly = analyzed.filter(
-                (msg) => msg.isThreat || msg.securityStatus === "resolved"
-            );
-
-            setMessages(threatsOnly);
+            // Show messages right away — no waiting for AI
+            setMessages(decrypted);
+            setLoading(false);
             setError(null);
-        } catch (err) {
-            setError(
-                err.response?.data?.message || "Failed to load flagged messages"
+
+            // Step 2: Run AI analysis per-message in the background
+            const threatKeywords = /attack|perimeter|breach|security|urgent|critical|hostile|engage|destroy|intercept/i;
+            const pendingIds = new Set(decrypted.filter(m => m.analyzing).map(m => m.id));
+            setAnalyzingIds(pendingIds);
+
+            await Promise.all(
+                decrypted
+                    .filter((msg) => msg.analyzing)
+                    .map(async (msg) => {
+                        let isThreat = false;
+                        if (threatKeywords.test(msg.decrypted)) {
+                            isThreat = await analyzeThreat(msg.decrypted);
+                        }
+                        // Update this single message in state
+                        setMessages((prev) =>
+                            prev
+                                .map((m) => m.id === msg.id ? { ...m, isThreat, analyzing: false } : m)
+                                .filter((m) => m.isThreat || m.securityStatus === "resolved" || m.analyzing)
+                        );
+                        setAnalyzingIds((prev) => {
+                            const next = new Set(prev);
+                            next.delete(msg.id);
+                            return next;
+                        });
+                    })
             );
-        } finally {
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to load flagged messages");
             setLoading(false);
         }
     };
@@ -163,16 +176,19 @@ const AlertsMonitor = () => {
                     <div className="space-y-3">
                         {messages.map((msg) => {
                             const isResolved = msg.securityStatus === "resolved";
-                            const isActive = msg.isThreat && !isResolved;
+                            const isAnalyzing = msg.analyzing;
+                            const isActive = msg.isThreat && !isResolved && !isAnalyzing;
 
                             return (
                                 <div
                                     key={msg.id}
-                                    className={`bg-white rounded-lg border shadow-sm p-5 transition-all hover:shadow-md ${isActive
-                                        ? "border-red-300 border-l-4 border-l-red-500"
-                                        : isResolved
-                                            ? "border-green-200 border-l-4 border-l-green-500"
-                                            : "border-gray-200"
+                                    className={`bg-white rounded-lg border shadow-sm p-5 transition-all hover:shadow-md ${isAnalyzing
+                                            ? "border-gray-200 opacity-70"
+                                            : isActive
+                                                ? "border-red-300 border-l-4 border-l-red-500"
+                                                : isResolved
+                                                    ? "border-green-200 border-l-4 border-l-green-500"
+                                                    : "border-gray-200"
                                         }`}
                                 >
                                     <div className="flex justify-between items-start gap-4">
@@ -217,6 +233,13 @@ const AlertsMonitor = () => {
                                                 <span className="text-xs text-gray-400">
                                                     Message #{msg.id}
                                                 </span>
+
+                                                {isAnalyzing && (
+                                                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50 px-2 py-0.5 rounded-full">
+                                                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-pulse"></span>
+                                                        Analyzing...
+                                                    </span>
+                                                )}
 
                                                 {isActive && (
                                                     <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-red-600 uppercase tracking-wider bg-red-50 px-2 py-0.5 rounded-full">

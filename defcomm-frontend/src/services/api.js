@@ -16,16 +16,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Intercept responses to clear invalid tokens
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      sessionStorage.removeItem('jwt_token');
-    }
-    return Promise.reject(error);
-  }
-);
 
 // --------------- Auth API ---------------
 
@@ -47,8 +37,11 @@ export const login = async (username, password) => {
 
 export const logout = async () => {
   sessionStorage.removeItem('jwt_token');
-  const response = await api.post('/auth/logout');
-  return response.data;
+  try {
+    await api.post('/auth/logout');
+  } catch {
+    // Ignore logout API errors
+  }
 };
 
 export const checkAuth = async () => {
