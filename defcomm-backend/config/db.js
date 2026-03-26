@@ -1,8 +1,22 @@
 const { Sequelize } = require('sequelize');
 
+// Strip ssl-mode from Aiven URLs — MySQL2 uses dialectOptions.ssl, not ssl-mode query param
+const getRawDbUrl = () => {
+    const url = process.env.DATABASE_URL;
+    if (!url) return null;
+    try {
+        const parsed = new URL(url);
+        parsed.searchParams.delete('ssl-mode');
+        return parsed.toString();
+    } catch {
+        return url;
+    }
+};
+
 // Create Sequelize instance
-const sequelize = process.env.DATABASE_URL
-    ? new Sequelize(process.env.DATABASE_URL, {
+const dbUrl = getRawDbUrl();
+const sequelize = dbUrl
+    ? new Sequelize(dbUrl, {
         dialect: 'mysql',
         logging: process.env.NODE_ENV === 'development' ? console.log : false,
         dialectOptions: {
@@ -45,7 +59,8 @@ const connectDB = async () => {
         await sequelize.sync({ alter: false });
         console.log('Database synchronized');
     } catch (error) {
-        console.error('Unable to connect to the database:', error.message);
+        console.error('FATAL: Unable to connect to the database:', error.message);
+        console.error('Please check DATABASE_URL in Render environment variables.');
         process.exit(1);
     }
 };
